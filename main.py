@@ -4,7 +4,7 @@ import time
 import sys
 import random
 from korail2 import *
-from Queue import Queue
+from queue import Queue
 
 KORAIL_ID =
 KORAIL_PW =
@@ -67,6 +67,7 @@ def main(request):
                 sendnoti(repr(seat))
             except KorailError as e:
                 print(" → Failed : {}".format(e))
+                queue_req.put(req)
                 sendnoti(e)
         print("")
 
