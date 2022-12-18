@@ -4,6 +4,7 @@ import random
 import sys
 import time
 from queue import Queue
+from typing import List
 
 from korail2 import *
 
@@ -15,21 +16,22 @@ PUSHOVER_USER_TOKEN = 'USER_TOKEN'
 
 
 class Request:
-    def __init__(self, dep, arv, dep_date, dep_time, psgrs, train_type, seat_type):
-        self.dep = dep
-        self.arv = arv
-        self.dep_date = dep_date
-        self.dep_time = dep_time
-        self.psgrs = psgrs
-        self.train_type = train_type
-        self.seat_type = seat_type
+    def __init__(self, dep: str, arv: str, dep_date: str, dep_time: str, psgrs: List[Passenger],
+                 train_type: TrainType, seat_type: ReserveOption):
+        self.dep: str = dep
+        self.arv: str = arv
+        self.dep_date: str = dep_date
+        self.dep_time: str = dep_time
+        self.psgrs: List[Passenger] = psgrs
+        self.train_type: TrainType = train_type
+        self.seat_type: ReserveOption = seat_type
 
 
 def sendnoti(msg):
     pass
 
 
-def main(requests, num):
+def main(requests: List[Request], num: int):
     queue_req = Queue()
     [queue_req.put(r) for r in requests]
 
@@ -61,7 +63,7 @@ def main(requests, num):
             sys.stdout.write("No Seats \n")
             queue_req.put(req)
         except Exception as e:
-            print(e)
+            print(f'{type(e).__name__}: {e}')
             queue_req.put(req)
 
         if Found:
