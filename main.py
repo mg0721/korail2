@@ -29,7 +29,7 @@ def sendnoti(msg):
     pass
 
 
-def main(requests):
+def main(requests, num):
     queue_req = Queue()
     [queue_req.put(r) for r in requests]
 
@@ -67,6 +67,8 @@ def main(requests):
         if Found:
             k.login()
             for idx, t in enumerate(trains):
+                if idx > num - 1:
+                    break
                 try:
                     sys.stdout.write("Trying to reserve : ")
                     seat = k.reserve(t, passengers=req.psgrs, option=req.seat_type)
@@ -87,5 +89,6 @@ if __name__ == "__main__":
                     [AdultPassenger(1)], TrainType.KTX, ReserveOption.GENERAL_ONLY),
             Request('동대구', '서울', '20221220', '080000',
                     [AdultPassenger(1)], TrainType.KTX, ReserveOption.GENERAL_ONLY),
-        ]
+        ],
+        num=5
     )
