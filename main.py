@@ -43,7 +43,6 @@ def main(requests: List[Request], num: int):
     while not queue_req.empty():
         time.sleep(random.uniform(3.0, 5.1))
         req = queue_req.get()
-        Found = False
         trains = []
         try:
             sys.stdout.write("Finding Seat %s ➜ %s \n" % (req.dep, req.arv))
@@ -58,7 +57,6 @@ def main(requests: List[Request], num: int):
             )
             for t in trains:
                 print(" → Found : {}".format(t))
-            Found = True
         except NoResultsError:
             sys.stdout.write("No Seats \n")
             queue_req.put(req)
@@ -66,7 +64,7 @@ def main(requests: List[Request], num: int):
             print(f'{type(e).__name__}: {e}')
             queue_req.put(req)
 
-        if Found:
+        if trains:
             k.login()
             for idx, t in enumerate(trains):
                 if idx > num - 1:
