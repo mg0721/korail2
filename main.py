@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 
-import time
-import sys
 import random
-from korail2 import *
+import sys
+import time
 from queue import Queue
 
-KORAIL_ID =
-KORAIL_PW =
+from korail2 import *
+
+KORAIL_ID = ''
+KORAIL_PW = ''
 
 PUSHOVER_APP_TOKEN = 'APP_TOKEN'
 PUSHOVER_USER_TOKEN = 'USER_TOKEN'
+
 
 class Request:
     def __init__(self, dep, arv, dep_date, dep_time, psgrs, train_type):
@@ -21,8 +23,10 @@ class Request:
         self.psgrs = psgrs
         self.train_type = train_type
 
+
 def sendnoti(msg):
     pass
+
 
 def main(request):
     queue_req = Queue()
@@ -38,7 +42,7 @@ def main(request):
         req = queue_req.get()
         Found = False
         try:
-            sys.stdout.write( "Finding Seat %s ➜ %s \n" % (req.dep, req.arv) )
+            sys.stdout.write("Finding Seat %s ➜ %s \n" % (req.dep, req.arv))
             trains = k.search_train_allday(
                 req.dep,
                 req.arv,
@@ -71,10 +75,11 @@ def main(request):
                 sendnoti(e)
         print("")
 
+
 if __name__ == "__main__":
     main(
         request=[
             Request('수원', '동대구', '20220209', '080000', [AdultPassenger(1)], TrainType.KTX),
             Request('동대구', '수원', '20220207', '080000', [AdultPassenger(1)], TrainType.KTX),
-       ]
+        ]
     )
