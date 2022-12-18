@@ -34,7 +34,7 @@ def main(request):
         exit(-1)
 
     while not queue_req.empty():
-        time.sleep(random.uniform(2.0, 5.0))
+        time.sleep(random.uniform(3.0, 5.1))
         req = queue_req.get()
         Found = False
         try:
