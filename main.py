@@ -15,22 +15,23 @@ PUSHOVER_USER_TOKEN = 'USER_TOKEN'
 
 
 class Request:
-    def __init__(self, dep, arv, dep_date, dep_time, psgrs, train_type):
+    def __init__(self, dep, arv, dep_date, dep_time, psgrs, train_type, seat_type):
         self.dep = dep
         self.arv = arv
         self.dep_date = dep_date
         self.dep_time = dep_time
         self.psgrs = psgrs
         self.train_type = train_type
+        self.seat_type = seat_type
 
 
 def sendnoti(msg):
     pass
 
 
-def main(request):
+def main(requests):
     queue_req = Queue()
-    [queue_req.put(r) for r in request]
+    [queue_req.put(r) for r in requests]
 
     k = Korail(KORAIL_ID, KORAIL_PW, auto_login=False)
     if not k.login():
@@ -41,9 +42,10 @@ def main(request):
         time.sleep(random.uniform(3.0, 5.1))
         req = queue_req.get()
         Found = False
+        trains = []
         try:
             sys.stdout.write("Finding Seat %s ➜ %s \n" % (req.dep, req.arv))
-            trains = k.search_train_allday(
+            trains += k.search_train_allday(
                 req.dep,
                 req.arv,
                 req.dep_date,
@@ -64,22 +66,26 @@ def main(request):
 
         if Found:
             k.login()
-            try:
-                sys.stdout.write("Trying to reserve : ")
-                seat = k.reserve(trains[0], passengers=req.psgrs)
-                print(" → Reserved : {}".format(seat))
-                sendnoti(repr(seat))
-            except KorailError as e:
-                print(" → Failed : {}".format(e))
-                queue_req.put(req)
-                sendnoti(e)
+            for idx, t in enumerate(trains):
+                try:
+                    sys.stdout.write("Trying to reserve : ")
+                    seat = k.reserve(t, passengers=req.psgrs, option=req.seat_type)
+                    print(" → Reserved : {}".format(seat))
+                    sendnoti(repr(seat))
+                    break
+                except KorailError as e:
+                    print(f" → Failed({idx}): {t} > {e}")
+                    queue_req.put(req)
+                    sendnoti(e)
         print("")
 
 
 if __name__ == "__main__":
     main(
-        request=[
-            Request('수원', '동대구', '20220209', '080000', [AdultPassenger(1)], TrainType.KTX),
-            Request('동대구', '수원', '20220207', '080000', [AdultPassenger(1)], TrainType.KTX),
+        requests=[
+            Request('서울', '동대구', '20221220', '080000',
+                    [AdultPassenger(1)], TrainType.KTX, ReserveOption.GENERAL_ONLY),
+            Request('동대구', '서울', '20221220', '080000',
+                    [AdultPassenger(1)], TrainType.KTX, ReserveOption.GENERAL_ONLY),
         ]
     )
