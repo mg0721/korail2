@@ -13,7 +13,7 @@ class KorailRunner:
         self.k = Korail(id, pwd, auto_login=False)
         if not self.k.login():
             print("login fail")
-            exit(-1)
+            sys.exit()
 
         self.queue_req: Queue = Queue()
 
